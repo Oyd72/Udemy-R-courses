@@ -1,0 +1,93 @@
+setwd("C:/Users/Arató Eszter/Documents/R workspace")
+fin<-read.csv("Future-500.csv", header = T)
+head(fin)
+tail(fin,10)
+str(fin)
+summary(fin)
+fin$Inception<-factor(fin$Inception)
+fin$Profit<-factor(fin$Profit)
+fin$Expenses<-gsub(" Dollars","",fin$Expenses)
+fin$Expenses<-gsub(",","",fin$Expenses)
+fin$Revenue<-gsub("\\$","",fin$Revenue)
+fin$Revenue<-gsub(",","",fin$Revenue)
+fin$Growth<-gsub("\\%","",fin$Growth)
+head(fin)
+fin$Expenses<-as.numeric(fin$Expenses)
+fin$Revenue<-as.numeric(fin$Revenue)
+fin$Growth<-as.numeric(fin$Growth)
+
+setwd("C:/Users/Arató Eszter/Documents/R workspace")
+fin<-read.csv("Future-500.csv", header = T, na.strings = c(""))
+fin$Inception<-factor(fin$Inception)
+fin$Profit<-factor(fin$Profit)
+fin$Expenses<-gsub(" Dollars","",fin$Expenses)
+fin$Expenses<-gsub(",","",fin$Expenses)
+fin$Revenue<-gsub("\\$","",fin$Revenue)
+fin$Revenue<-gsub(",","",fin$Revenue)
+fin$Growth<-gsub("\\%","",fin$Growth)
+head(fin)
+fin$Expenses<-as.numeric(fin$Expenses)
+fin$Revenue<-as.numeric(fin$Revenue)
+fin$Growth<-as.numeric(fin$Growth)
+fin_na<-fin[!complete.cases(fin),]
+fin_no_na<-fin[which(complete.cases(fin)),]
+# fin_no_na<-fin[complete.cases(fin),] - identical
+
+which(fin$Employees == 40) # ignores NAs
+fin[which(fin$Employees ==40),]
+fin[fin$Employees ==40,] # with NAs
+
+is.na(fin$State)
+fin[is.na(fin$State),]
+fin[!is.na(fin$State),]
+
+fin_backup<-fin
+
+attach(fin)
+plot(Revenue, Expenses)
+abline(lm(Expenses~Revenue))
+
+plot(Revenue, Employees)
+abline(lm(Employees~Revenue))
+
+plot(Expenses, Employees)
+abline(lm(Employees~Expenses))
+
+library(RColorBrewer)
+brewer.pal.info
+display.brewer.all()
+n<-7
+my_graph_colors<-brewer.pal(n,"Pastel1")
+
+barplot(rep(1,n), col = my_graph_colors)
+plot(Expenses, Employees)
+
+#Resetting the dataframe index:
+rownames(fin) <- 1:nrow(fin)
+rownames(fin)
+
+rownames(fin) <- NULL
+rownames(fin)
+
+#Replacing missing data - Factual analysis:
+fin[!complete.cases(fin),]
+fin[is.na(fin$State),]
+
+fin[(is.na(fin$State) & fin$City == 'New York'),'State'] <- 'NY'
+fin[(is.na(fin$State) & fin$City == 'San Francisco'),'State'] <- 'CA'
+
+#Replacing missing data - Median imputation method:
+fin_na
+median_retail<-median(fin[fin$Industry=="Retail","Employees"], na.rm= TRUE)
+median_retail
+
+fin[is.na(fin$Employees) & fin$Industry=="Retail","Employees"] <-median_retail
+fin[is.na(fin$Employees),]
+
+median_fin_serv<-median(fin[fin$Industry=="Financial Services","Employees"], na.rm= TRUE)
+median_fin_serv
+
+fin[is.na(fin$Employees) & fin$Industry=="Financial Services","Employees"] <-median_fin_serv
+fin[is.na(fin$Employees),]
+
+fin[!complete.cases(fin),]
