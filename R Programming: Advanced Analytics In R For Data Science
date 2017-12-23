@@ -77,17 +77,34 @@ fin[(is.na(fin$State) & fin$City == 'New York'),'State'] <- 'NY'
 fin[(is.na(fin$State) & fin$City == 'San Francisco'),'State'] <- 'CA'
 
 #Replacing missing data - Median imputation method:
-fin_na
+fin[!complete.cases(fin),]
+
 median_retail<-median(fin[fin$Industry=="Retail","Employees"], na.rm= TRUE)
 median_retail
-
 fin[is.na(fin$Employees) & fin$Industry=="Retail","Employees"] <-median_retail
-fin[is.na(fin$Employees),]
+
+fin[!complete.cases(fin),]
 
 median_fin_serv<-median(fin[fin$Industry=="Financial Services","Employees"], na.rm= TRUE)
 median_fin_serv
-
 fin[is.na(fin$Employees) & fin$Industry=="Financial Services","Employees"] <-median_fin_serv
-fin[is.na(fin$Employees),]
+
+fin[!complete.cases(fin),]
+
+median_growth<-median(fin[fin$Industry=="Construction","Growth"], na.rm=TRUE)
+median_growth
+fin[is.na(fin$Growth) & fin$Industry=="Construction","Growth"]<-median_growth
+
+fin[!complete.cases(fin),]
+
+median_revenue<-median(fin[fin$Industry=="Construction","Revenue"], na.rm=TRUE)
+median_revenue
+fin[is.na(fin$Revenue) & fin$Industry=="Construction","Revenue"]<-median_revenue
+
+fin[!complete.cases(fin),]
+
+median_exp<-median(fin[fin$Industry=="Construction","Expenses"], na.rm=TRUE)
+median_exp
+fin[is.na(fin$Expenses) & is.na(fin$Profit) & fin$Industry =="Construction","Expenses"]<-median_exp
 
 fin[!complete.cases(fin),]
