@@ -1,0 +1,63 @@
+util<-read.csv("Machine-Utilization.csv", header = TRUE)
+head(util,8)
+summary(util)
+util$Utilization<-1-util$Percent.Idle
+util$MyTimeStamp<-as.POSIXct(util$Timestamp,format="%d/%m/%Y %H:%M")
+util<-util[,c(5,2,3,4)]
+
+util_backup<-util
+RL1<-util[util$Machine=="RL1",]
+RL1$Machine <- factor(RL1$Machine)
+
+values<-c(min(RL1$Utilization, na.rm = TRUE), mean(RL1$Utilization,na.rm = TRUE), max(RL1$Utilization,na.rm = TRUE))
+values
+
+less_than_90<-length(RL1[which(RL1$Utilization<0.9),])>0
+
+list_RL1<-list("RL1", values, less_than_90)
+list_RL1
+
+list_RL1<-list(Machine="RL1", Stats=values, LowThreshold=less_than_90)
+list_RL1
+
+list_RL1[2]
+typeof(list_RL1)
+
+list_RL1[[2]]
+typeof(list_RL1[[2]])
+
+list_RL1[[2]][2]
+
+list_RL1$Stats [2]
+typeof(list_RL1[[2]][2])
+
+list_RL1[5]<-"Próba"
+list_RL1
+
+list_RL1[5]<-NULL
+list_RL1[4]<-NULL
+list_RL1
+
+list_RL1$Data<-util
+summary(list_RL1)
+
+list_RL1$UnknownHours<-RL1[is.na(RL1$Percent.Idle),"MyTimeStamp"]
+
+list_RL1[1:2]
+list_RL1[1:2][1]
+list_RL1[1:2][2]
+list_RL1[c(1,5)]
+
+sublist_1<-list_RL1[c("Stats","Machine")]
+sublist_1
+
+#Building a timeseries plot:
+library(ggplot2)
+
+p <- ggplot(data=util, aes(x=MyTimeStamp, y=Utilization, colour=Machine))
+myplot <- p + geom_line(size=1.2) +
+  facet_grid(Machine~.) +
+  geom_hline(yintercept=0.90, colour="Gray", size=1.2, linetype=3)
+
+list_RL1$Plot <- myplot
+list_RL1
