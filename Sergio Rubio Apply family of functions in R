@@ -1,0 +1,137 @@
+###################################
+# 3 - "Apply" family of functions #
+###################################
+
+getwd()
+setwd("./data/Weather Data")
+getwd()
+
+#Read data:
+Chicago <- read.csv("Chicago-C.csv", row.names=1)
+Houston <- read.csv("Houston-C.csv", row.names=1)
+NewYork <- read.csv("NewYork-C.csv", row.names=1)
+SanFrancisco <- read.csv("SanFrancisco-C.csv", row.names=1)
+
+Chicago
+Houston
+NewYork
+SanFrancisco
+
+is.data.frame(Chicago)
+
+#Convert to matrices:
+Chicago <- as.matrix(Chicago)
+Houston <- as.matrix(Houston)
+NewYork <- as.matrix(NewYork)
+SanFrancisco <- as.matrix(SanFrancisco)
+
+is.matrix(Chicago)
+
+#Create a list:
+Weather <- list(Chicago=Chicago, NewYork=NewYork, Houston=Houston, SanFrancisco=SanFrancisco)
+Weather
+
+Weather$Chicago
+
+#Using apply():
+?apply
+
+Chicago
+apply(Chicago, 1, mean)
+apply(Chicago, 1, max)
+apply(Chicago, 1, min)
+
+#Compare:
+apply(Chicago, 1, mean)
+apply(NewYork, 1, mean)
+apply(Houston, 1, mean)
+apply(SanFrancisco, 1, mean)
+
+#Recreating apply() with loops:
+output <- NULL
+
+for(i in 1:5) {
+    output[i] <- mean(Chicago[i,])
+}
+
+output
+names(output) <- rownames(Chicago)
+output
+
+#Using lapply():
+?lapply
+
+Chicago
+t(Chicago) #Transpose function
+
+Weather
+myNewList <- lapply(Weather, t)
+myNewList
+
+rbind(Chicago, NewRow=1:12) #Add new row
+lapply(Weather, rbind, NewRow=1:12)
+
+?rowMeans
+rowMeans(Chicago) #Identical to apply(Chicago, 1, mean)
+lapply(Weather, rowMeans)
+
+colMeans(Chicago)
+rowSums(Chicago)
+colSums(Chicago)
+
+#Combining lapply() with the [] operator:
+Weather
+Weather$Chicago[1,1]
+lapply(Weather, "[", 1, 1) #Return first element for each city
+lapply(Weather, "[", 1,) #Return first row for each city
+lapply(Weather, "[",,3) #Return third column for each city
+
+#Adding your own functions:
+lapply(Weather, rowMeans)
+lapply(Weather, function(x) x[1,]) #Return first row for each city
+lapply(Weather, function(z) z[1,]-z[2,]) #Return first row minus second row for each city
+lapply(Weather, function(z) round((z[1,]-z[2,])/z[2,],2)) #Temperature fluctuations for each city
+
+#Using sapply():
+?sapply
+
+lapply(Weather, "[", 1, 7) #Returns a list
+sapply(Weather, "[", 1, 7) #Returns a vector
+
+lapply(Weather, "[", 1, 10:12) #Returns a list
+sapply(Weather, "[", 1, 10:12) #Returns a matrix
+
+lapply(Weather, rowMeans)
+round(sapply(Weather, rowMeans), 2)
+
+sapply(Weather, function(z) round((z[1,]-z[2,])/z[2,],2))
+
+
+sapply(Weather, rowMeans)
+sapply(Weather, rowMeans, simplify=FALSE) #Same result as lapply
+
+#Nesting apply functions:
+Weather
+lapply(Weather, rowMeans)
+?rowMeans
+
+Chicago
+apply(Chicago, 1, max)
+
+lapply(Weather, apply, 1, max) #Apply across whole list
+lapply(Weather, function(x) apply(x, 1, max)) #Apply across whole list
+
+sapply(Weather, apply, 1, max)
+sapply(Weather, apply, 1, min)
+
+#Which.max:
+?which
+?which.max
+
+which.max(Chicago[1,])
+names(which.max(Chicago[1,])) #Name of the month
+
+apply(Chicago, 1, function(x) names(which.max(x)))
+lapply(Weather, function(y) apply(y, 1, function(z) names(which.max(z))))
+sapply(Weather, function(y) apply(y, 1, function(z) names(which.max(z))))
+
